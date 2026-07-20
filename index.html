@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>صندوق التبرعات | إدارة العمليات المالية</title>
+    <title>صندوق التبرعات</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script data-goatcounter="https://engrr-abdulrahman.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://eng-abdulrahman.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <style>
         * {
             margin: 0;
@@ -1556,10 +1556,10 @@
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
             <div class="login-company-title">صندوق التبرعات</div>
-            <div class="login-project-title">إدارة التبرعات المالية</div>
+            <div class="login-project-title">إدارة أ. مشاري</div>
             <div class="login-title">
                 🔐 برجاء إدخال كلمة الدخول<br>
-                للاطلاع على <span>عمليات صندوق التبرعات</span>
+                للاطلاع على <span>صندوق التبرعات</span>
             </div>
             <input type="text" class="login-input" id="loginInput" placeholder="كلمة الدخول" autocomplete="off">
             <button class="login-button" id="loginButton">🚪 دخول</button>
@@ -1572,7 +1572,7 @@
         <div class="app-container">
             <div class="main-header">
                 <h1>صندوق التبرعات</h1>
-                <p id="headerSubtitle">عرض عمليات الوارد</p>
+                <p id="headerSubtitle">عرض الوارد</p>
             </div>
 
             <!-- كارت الإحصائيات -->
@@ -1588,7 +1588,7 @@
             
             <!-- تذييل -->
             <div class="footer-company">
-                صندوق التبرعات - إدارة العمليات المالية
+                صندوق التبرعات
             </div>
         </div>
     </div>
@@ -1632,7 +1632,7 @@
     </div>
 
     <script>
-        const BASE_URL = 'https://engr-abdulrahman.github.io/Villa_23_Expenses/';
+        const BASE_URL = 'https://engr-abdulrahman.github.io/Mishari_Charity/';
         
         // =============================================
         // بيانات التبرعات الجديدة - عامة بدون مشروع
@@ -1731,7 +1731,7 @@
             const balanceClass = balance >= 0 ? 'balance-positive' : 'balance-negative';
             const balanceFormatted = Math.floor(balance).toLocaleString('en');
             
-            let totalLabel = mode === 'incoming' ? '💰 إجمالي التبرعات الواردة' : '💸 إجمالي المصروفات الصادرة';
+            let totalLabel = mode === 'incoming' ? '💰 إجمالي التبرعات الواردة' : '💳 إجمالي المصروفات الصادرة';
             
             statsContainer.innerHTML = `
                 <div class="stat-card-single">
