@@ -3,1540 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>صندوق التبرعات</title>
+    <title>تطبيق الصندوق</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script data-goatcounter="https://eng-abdulrahman.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         /* شاشة البدء */
         .welcome-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; inset: 0;
             background: linear-gradient(145deg, #0a0f1a 0%, #05080f 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             z-index: 3000;
             animation: fadeInOut 2.8s ease-in-out forwards;
             pointer-events: none;
         }
-
         @keyframes fadeInOut {
             0% { opacity: 0; visibility: visible; }
             10% { opacity: 1; }
             85% { opacity: 1; }
             100% { opacity: 0; visibility: hidden; }
         }
-
         .welcome-text-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
             opacity: 0;
             animation: textFadeSlide 0.6s ease-out 0.2s forwards, textFadeOut 0.4s ease-in 2.4s forwards;
-            width: 90%;
-            max-width: 800px;
+            width: 90%; max-width: 800px;
         }
-
         @keyframes textFadeSlide {
             0% { opacity: 0; transform: scale(0.95); }
             100% { opacity: 1; transform: scale(1); }
         }
-
         @keyframes textFadeOut {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(1.05); }
         }
-
         .welcome-title {
             font-family: 'IBM Plex Sans Arabic', sans-serif;
-            font-weight: 800;
-            text-align: center;
-            line-height: 1.1;
-            letter-spacing: 0.02em;
-            width: 100%;
+            font-weight: 800; text-align: center;
+            line-height: 1.1; letter-spacing: 0.02em; width: 100%;
         }
-
         .welcome-title .line1 {
-            display: block;
-            font-size: clamp(4rem, 15vw, 12rem);
+            display: block; font-size: clamp(4rem, 15vw, 12rem);
             background: linear-gradient(135deg, #F5D97A, #2BBF9F);
-            background-clip: text;
-            -webkit-background-clip: text;
+            background-clip: text; -webkit-background-clip: text;
             color: transparent;
-            text-shadow: 0 0 60px rgba(43, 191, 159, 0.15);
         }
-
         .welcome-title .line2 {
-            display: block;
-            font-size: clamp(3.5rem, 13vw, 10rem);
+            display: block; font-size: clamp(3.5rem, 13vw, 10rem);
             background: linear-gradient(135deg, #FFE6B0, #F5D97A);
-            background-clip: text;
-            -webkit-background-clip: text;
+            background-clip: text; -webkit-background-clip: text;
             color: transparent;
-            text-shadow: 0 0 60px rgba(245, 217, 122, 0.15);
             margin-top: -0.05em;
         }
-
         @media (max-width: 480px) {
-            .welcome-title .line1 {
-                font-size: clamp(3rem, 20vw, 5rem);
-            }
-            .welcome-title .line2 {
-                font-size: clamp(2.5rem, 17vw, 4.2rem);
-            }
+            .welcome-title .line1 { font-size: clamp(3rem, 20vw, 5rem); }
+            .welcome-title .line2 { font-size: clamp(2.5rem, 17vw, 4.2rem); }
         }
 
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .welcome-title .line1 {
-                font-size: clamp(5rem, 18vw, 9rem);
-            }
-            .welcome-title .line2 {
-                font-size: clamp(4rem, 15vw, 7.5rem);
-            }
-        }
-
-        /* شاشة الدخول */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #0a0f1a 0%, #05080f 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.5s ease;
-        }
-
-        .login-screen.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .login-container {
-            background: #061216;
-            border-radius: 20px;
-            padding: 2.5rem 2rem;
-            max-width: 500px;
-            width: 90%;
-            border: 1px solid #1A5A4F;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-            text-align: center;
-        }
-
-        .login-company-title {
-            color: #2BBF9F;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-        }
-
-        .login-project-title {
-            color: #D4B896;
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-bottom: 1.8rem;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-        }
-
-        .login-title {
-            color: #8DCBBF;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 2rem;
-            line-height: 1.8;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-        }
-
-        .login-title span {
-            color: #2BBF9F;
-            font-weight: 700;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 0.9rem 1.2rem;
-            font-size: 1.4rem;
-            border: 2px solid #1A4A40;
-            border-radius: 12px;
-            background: #020A0D;
-            color: #EAF5F2;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: all 0.3s ease;
-            text-align: center;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
-        }
-
-        .login-input:focus {
-            outline: none;
-            border-color: #2BBF9F;
-            box-shadow: 0 0 20px rgba(43, 191, 159, 0.15);
-            background: #031216;
-        }
-
-        .login-input::placeholder {
-            color: #3A6A60;
-            font-size: 0.9rem;
-            letter-spacing: 0;
-        }
-
-        .login-button {
-            width: 100%;
-            padding: 0.9rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1A8A75, #0F6A5A);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            margin-top: 0.5rem;
-        }
-
-        .login-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(43, 191, 159, 0.3);
-        }
-
-        .login-button:active {
-            transform: translateY(0);
-        }
-
-        .login-error {
-            color: #FF6B6B;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            font-weight: 500;
-            min-height: 2.5rem;
-        }
-
-        .login-error.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* التطبيق الرئيسي */
+        /* الجسم */
         body {
             background: #020A0D;
             font-family: 'IBM Plex Sans Arabic', 'Segoe UI', 'Tahoma', sans-serif;
             font-weight: 500;
-            padding: 1rem;
+            padding: 0.8rem;
             color: #BDEADF;
-            font-variant-numeric: lining-nums;
-            font-feature-settings: "ss02";
-            transition: background 0.6s ease;
+            padding-bottom: 90px;
         }
 
-        body.outgoing-mode {
-            background: #0F0A08;
-        }
+        .app-container { max-width: 900px; margin: 0 auto; }
 
-        .app-container {
-            max-width: 1600px;
-            margin: 0 auto;
+        /* شريط التصدير/الاستيراد */
+        .io-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            justify-content: center;
         }
-
-        .main-content {
-            opacity: 0;
-            animation: contentFadeIn 0.5s ease-out 0.3s forwards;
+        .io-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 0.55rem 0.8rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            border: 2px solid;
         }
-
-        @keyframes contentFadeIn {
-            to { opacity: 1; }
+        .io-btn.export {
+            background: linear-gradient(135deg, #1A8A75, #0F6A5A);
+            color: #fff;
+            border-color: #2BBF9F;
         }
+        .io-btn.export:hover {
+            background: linear-gradient(135deg, #2BBF9F, #1A8A75);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(43, 191, 159, 0.25);
+        }
+        .io-btn.import {
+            background: linear-gradient(135deg, #2A1F18, #1A100D);
+            color: #C9B89A;
+            border-color: #5A4A3A;
+        }
+        .io-btn.import:hover {
+            background: linear-gradient(135deg, #3A2A20, #2A1F18);
+            border-color: #A89070;
+            color: #E8D4B8;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(168, 144, 112, 0.2);
+        }
+        .io-btn:active { transform: translateY(0) scale(0.98); }
 
         /* الهيدر */
         .main-header {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             border-bottom: 2px solid #1A4A40;
-            padding-bottom: 0.8rem;
-            transition: border-color 0.6s ease;
+            padding-bottom: 0.6rem;
         }
-
-        body.outgoing-mode .main-header {
-            border-bottom-color: #5A4A3A;
-        }
-
         .main-header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 1.5rem; font-weight: 700;
             background: linear-gradient(135deg, #C9B89A, #2BBF9F);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.3px;
-            transition: background 0.6s ease;
-        }
-
-        body.outgoing-mode .main-header h1 {
-            background: linear-gradient(135deg, #A89070, #C9B89A);
-            background-clip: text;
-            -webkit-background-clip: text;
+            background-clip: text; -webkit-background-clip: text;
             color: transparent;
         }
-
         .main-header p {
+            color: #6A9A8F; font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+
+        /* الرصيد */
+        .balance-card {
+            background: linear-gradient(135deg, #061216, #0A1A20);
+            border: 1px solid #1A4A40;
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .balance-label {
+            font-size: 0.75rem; color: #6A9A8F;
+            font-weight: 600; letter-spacing: 0.5px;
+        }
+        .balance-amount {
+            font-size: 1.8rem; font-weight: 800;
+            display: block; direction: ltr;
+            margin-top: 0.2rem;
+        }
+        .balance-positive { color: #2BBF9F; }
+        .balance-negative { color: #FF7A7A; }
+        .balance-sub {
+            font-size: 0.7rem; color: #4A8A7A;
+            display: block; margin-top: 0.15rem;
+        }
+        .balance-mini-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0.6rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid #1A4A40;
+            gap: 0.5rem;
+        }
+        .balance-mini { text-align: center; flex: 1; }
+        .balance-mini-label {
+            font-size: 0.65rem; color: #6A9A8F;
+            display: block; margin-bottom: 0.15rem;
+        }
+        .balance-mini-amount {
+            font-size: 0.95rem; font-weight: 700;
+            direction: ltr; display: block;
+        }
+        .in-color { color: #2BBF9F; }
+        .out-color { color: #FF9F7C; }
+
+        /* تبويبات الفلترة */
+        .filter-tabs {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            background: #061216;
+            padding: 0.3rem;
+            border-radius: 12px;
+            border: 1px solid #1A4A40;
+        }
+        .filter-tab {
+            flex: 1;
+            padding: 0.55rem 0.4rem;
+            text-align: center;
+            background: transparent;
+            border: none;
             color: #6A9A8F;
-            font-size: 1rem;
-            margin-top: 0.3rem;
-            font-weight: 500;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: color 0.6s ease;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .filter-tab.active {
+            background: linear-gradient(135deg, #1A8A75, #0F6A5A);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(43, 191, 159, 0.25);
+        }
+        .filter-tab:hover:not(.active) {
+            color: #BDEADF;
+            background: #0A1A20;
+        }
+        .filter-tab .count {
+            display: block;
+            font-size: 0.65rem;
+            opacity: 0.75;
+            margin-top: 0.1rem;
         }
 
-        body.outgoing-mode .main-header p {
-            color: #8A7A6A;
+        /* قائمة العمليات */
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        /* كارت الإحصائيات */
-        .stats-single {
-            margin-bottom: 1.8rem;
-            border-bottom: 2px solid #1A4A40;
-            padding-bottom: 1.2rem;
-            transition: border-color 0.6s ease;
-        }
-
-        body.outgoing-mode .stats-single {
-            border-bottom-color: #5A4A3A;
-        }
-
-        .stat-card-single {
+        /* الكرت المبسط */
+        .tx-card {
             background: #061216;
             border-radius: 10px;
-            padding: 1.2rem 0.8rem;
-            text-align: center;
+            padding: 0.6rem 0.8rem;
             border: 1px solid #1A4A40;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            border-right: 4px solid #2BBF9F;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s ease;
+        }
+        .tx-card.outgoing { border-right-color: #FF9F7C; }
+        .tx-card:hover { background: #081A20; transform: translateX(-2px); }
+        .tx-card.outgoing:hover { background: #1A100D; }
+
+        .tx-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            background: rgba(43, 191, 159, 0.12);
+            border: 1px solid rgba(43, 191, 159, 0.3);
+        }
+        .tx-card.outgoing .tx-icon {
+            background: rgba(255, 159, 124, 0.12);
+            border-color: rgba(255, 159, 124, 0.3);
         }
 
-        body.outgoing-mode .stat-card-single {
-            background: #1A100D;
-            border-color: #5A4A3A;
-        }
-
-        .stat-card-single:hover {
-            border-color: #2BBF9F;
-            background: #081A20;
-            transform: translateY(-2px);
-        }
-
-        body.outgoing-mode .stat-card-single:hover {
-            border-color: #A89070;
-            background: #241810;
-        }
-
-        /* رصيد الصندوق */
-        .balance-section {
-            margin-bottom: 1rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid #1A4A40;
-            transition: border-color 0.6s ease;
-        }
-
-        body.outgoing-mode .balance-section {
-            border-bottom-color: #5A4A3A;
-        }
-
-        .balance-label {
-            font-size: 0.8rem;
+        .tx-body { flex: 1; min-width: 0; }
+        .tx-desc {
+            font-size: 0.88rem;
             font-weight: 600;
+            color: #BDEADF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tx-date {
+            font-size: 0.72rem;
             color: #6A9A8F;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 0.3rem;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .balance-label {
-            color: #8A7A6A;
-        }
-
-        .balance-amount {
-            font-size: 2.5rem;
-            font-weight: 800;
+            margin-top: 0.1rem;
             direction: ltr;
-            display: block;
-            transition: color 0.6s ease;
+            text-align: right;
         }
 
-        .balance-positive {
+        .tx-right { text-align: left; flex-shrink: 0; }
+        .tx-amount {
+            font-size: 0.95rem;
+            font-weight: 700;
+            direction: ltr;
             color: #2BBF9F;
         }
-
-        .balance-negative {
-            color: #A89070;
-        }
-
-        body.outgoing-mode .balance-negative {
-            color: #C9A87A;
-        }
-
-        .balance-sub {
-            font-size: 0.7rem;
-            color: #4A8A7A;
-            display: block;
-            margin-top: 0.15rem;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .balance-sub {
-            color: #7A6A5A;
-        }
-
-        /* المبلغ الإجمالي */
-        .total-section {
-            padding-top: 0.3rem;
-        }
-
-        .total-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #6A9A8F;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 0.2rem;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .total-label {
-            color: #8A7A6A;
-        }
-
-        .total-amount {
-            font-size: 1.8rem;
+        .tx-card.outgoing .tx-amount { color: #FF9F7C; }
+        .tx-badge {
+            font-size: 0.6rem;
             font-weight: 700;
-            color: #D4B896;
-            direction: ltr;
-            display: block;
-            transition: color 0.6s ease;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 0.15rem;
+            background: rgba(43, 191, 159, 0.15);
+            color: #2BBF9F;
+        }
+        .tx-card.outgoing .tx-badge {
+            background: rgba(255, 159, 124, 0.15);
+            color: #FF9F7C;
         }
 
-        body.outgoing-mode .total-amount {
-            color: #C9A87A;
-        }
-
-        .total-count {
-            font-size: 0.7rem;
+        .tx-delete {
+            background: transparent;
+            border: none;
             color: #4A8A7A;
-            display: block;
-            margin-top: 0.1rem;
-            transition: color 0.6s ease;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.2rem 0.3rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            font-family: monospace;
+        }
+        .tx-delete:hover {
+            color: #FF6B6B;
+            background: rgba(255, 107, 107, 0.1);
         }
 
-        body.outgoing-mode .total-count {
-            color: #7A6A5A;
+        .no-tx {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #4A8A7A;
+            font-size: 0.9rem;
+            background: #061216;
+            border-radius: 10px;
+            border: 1px dashed #1A4A40;
         }
 
-        /* النوافذ المنبثقة */
+        /* الزر العائم للإضافة */
+        .add-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1A8A75, #0F6A5A);
+            color: #fff;
+            border: 2px solid #2BBF9F;
+            font-size: 2rem;
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(43, 191, 159, 0.35);
+            z-index: 500;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .add-btn:hover {
+            transform: scale(1.08);
+            background: linear-gradient(135deg, #2BBF9F, #1A8A75);
+        }
+        .add-btn:active { transform: scale(0.94); }
+        @media (max-width: 480px) {
+            .add-btn { width: 55px; height: 55px; font-size: 1.8rem; bottom: 15px; left: 15px; }
+        }
+
+        /* النافذة المنبثقة */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(5px);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             visibility: hidden;
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
+            padding: 1rem;
         }
-        
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        
+        .modal-overlay.active { visibility: visible; opacity: 1; }
         .modal-container {
             background: #061216;
             border-radius: 16px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 85vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            width: 100%;
+            max-width: 420px;
             border: 1px solid #1A5A4F;
             box-shadow: 0 20px 35px rgba(0, 0, 0, 0.7);
             font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: all 0.6s ease;
+            overflow: hidden;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
-
-        body.outgoing-mode .modal-container {
-            background: #1A100D;
-            border-color: #5A4A3A;
-        }
-        
         .modal-header {
             background: #0A1A20;
-            padding: 1rem 1.2rem;
+            padding: 0.9rem 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #1A5A4F;
-            transition: all 0.6s ease;
+            flex-shrink: 0;
         }
-
-        body.outgoing-mode .modal-header {
-            background: #241810;
-            border-bottom-color: #5A4A3A;
-        }
-        
         .modal-header h3 {
             color: #C9B89A;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: color 0.6s ease;
         }
-
-        body.outgoing-mode .modal-header h3 {
-            color: #B89A7A;
-        }
-        
         .close-modal {
             background: none;
             border: none;
             color: #8A9A92;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
             line-height: 1;
-            padding: 0 0.5rem;
+            padding: 0 0.3rem;
         }
-        
-        .close-modal:hover {
-            color: #FF9F7C;
-            transform: scale(1.1);
-        }
-        
-        .modal-body {
-            padding: 1.2rem;
-            overflow-y: auto;
-            max-height: 65vh;
-        }
+        .close-modal:hover { color: #FF9F7C; }
 
-        /* نافذة PDF */
-        .pdf-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .modal-body { padding: 1rem; overflow-y: auto; }
+        .form-group { margin-bottom: 0.85rem; }
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #8DCBBF;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+        .form-input, .form-select {
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.97);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.95rem;
+            border: 2px solid #1A4A40;
+            border-radius: 10px;
+            background: #020A0D;
+            color: #EAF5F2;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            transition: all 0.2s;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2BBF9F;
+            background: #031216;
+        }
+        .form-input[type="date"] { direction: ltr; text-align: right; }
+        .type-toggle {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.3s ease;
+            gap: 0.4rem;
+            background: #020A0D;
+            padding: 0.3rem;
+            border-radius: 10px;
+            border: 2px solid #1A4A40;
         }
-
-        .pdf-modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
+        .type-btn {
+            flex: 1;
+            padding: 0.55rem;
+            border: none;
+            background: transparent;
+            color: #6A9A8F;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-
-        .pdf-modal-container {
-            background: #061216;
-            border-radius: 16px;
-            width: 95%;
-            max-width: 1200px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #1A5A4F;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.7);
-            transition: all 0.6s ease;
+        .type-btn.active-in {
+            background: linear-gradient(135deg, #1A8A75, #0F6A5A);
+            color: #fff;
         }
-
-        body.outgoing-mode .pdf-modal-container {
-            background: #1A100D;
-            border-color: #5A4A3A;
+        .type-btn.active-out {
+            background: linear-gradient(135deg, #8A4A30, #6A3A20);
+            color: #fff;
         }
-
-        .pdf-modal-header {
-            background: #0A1A20;
-            padding: 0.8rem 1.2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1A5A4F;
-            border-radius: 16px 16px 0 0;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .pdf-modal-header {
-            background: #241810;
-            border-bottom-color: #5A4A3A;
-        }
-
-        .pdf-modal-header h3 {
-            color: #C9B89A;
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
             font-size: 1rem;
             font-weight: 700;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            flex: 1;
-            text-align: center;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .pdf-modal-header h3 {
-            color: #B89A7A;
-        }
-
-        .close-pdf-modal {
-            background: none;
-            border: none;
-            color: #8A9A92;
-            font-size: 1.8rem;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
-            line-height: 1;
-            padding: 0 0.5rem;
-        }
-
-        .close-pdf-modal:hover {
-            color: #FF9F7C;
-            transform: scale(1.1);
-        }
-
-        .pdf-iframe-container {
-            flex: 1;
-            padding: 0.5rem;
-            background: #020A0D;
-            transition: background 0.6s ease;
-        }
-
-        body.outgoing-mode .pdf-iframe-container {
-            background: #0F0A08;
-        }
-
-        .pdf-iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 8px;
-        }
-
-        /* ملخص الفئة */
-        .category-summary {
-            background: linear-gradient(135deg, #0A1A20, #061216);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1.2rem;
-            text-align: center;
-            border: 1px solid #1A5A4F;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .category-summary {
-            background: linear-gradient(135deg, #241810, #1A100D);
-            border-color: #5A4A3A;
-        }
-        
-        .category-summary .summary-label {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #6A9A8F;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.3rem;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .category-summary .summary-label {
-            color: #8A7A6A;
-        }
-        
-        .category-summary .summary-amount {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2BBF9F;
-            direction: ltr;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .category-summary .summary-amount {
-            color: #C9A87A;
-        }
-        
-        .category-summary .summary-count {
-            font-size: 0.8rem;
-            color: #4A8A7A;
-            margin-top: 0.25rem;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .category-summary .summary-count {
-            color: #8A7A6A;
-        }
-
-        /* البطاقات المصفاة */
-        .filtered-cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.8rem;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-left: 0.2rem;
-        }
-        
-        .filtered-card {
-            background: #061216;
-            border-radius: 8px;
-            padding: 0.7rem 0.9rem;
-            border: 1px solid #1A4A40;
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .filtered-card {
-            background: #1A100D;
-            border-color: #5A4A3A;
-        }
-        
-        .filtered-card .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-        }
-        
-        .filtered-amount {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #D4B896;
-            direction: ltr;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .filtered-amount {
-            color: #C9A87A;
-        }
-        
-        .filtered-date {
-            background: #020A0D;
-            padding: 0.15rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-family: monospace;
-            color: #6A9A8F;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .filtered-date {
-            background: #0F0A08;
-            color: #8A7A6A;
-        }
-        
-        .filtered-desc {
-            font-size: 0.85rem;
-            color: #8DCBBF;
-            text-align: center;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .filtered-desc {
-            color: #A8907A;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 2rem;
-            color: #6A9A8F;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .no-results {
-            color: #8A7A6A;
-        }
-
-        /* شبكة الكروت الرئيسية */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.9rem;
-        }
-
-        @media (min-width: 640px) {
-            .cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-            body {
-                padding: 1.5rem;
-            }
-            .balance-amount {
-                font-size: 3rem;
-            }
-            .total-amount {
-                font-size: 2.2rem;
-            }
-            .main-header h1 {
-                font-size: 2rem;
-            }
-            .filtered-cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .cards-grid {
-                gap: 1rem;
-            }
-        }
-
-        /* الكارت الرئيسي */
-        .transfer-card {
-            background: #061216;
-            border-radius: 8px;
-            padding: 0.7rem 0.9rem;
-            transition: all 0.3s ease;
-            border: 1px solid #1A4A40;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-        }
-
-        body.outgoing-mode .transfer-card {
-            background: #1A100D;
-            border-color: #5A4A3A;
-        }
-
-        .transfer-card:hover {
-            border-color: #2BBF9F;
-            background: #081A20;
-            transform: translateY(-2px);
-        }
-
-        body.outgoing-mode .transfer-card:hover {
-            border-color: #A89070;
-            background: #241810;
-        }
-
-        /* رأس الكارت */
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 0.4rem;
-        }
-
-        .serial-number {
-            font-size: 0.85rem;
-            font-weight: 700;
-            background: #0A1A20;
-            padding: 0.15rem 0.6rem;
-            border-radius: 4px;
-            color: #D4B896;
-            direction: ltr;
-            font-family: 'IBM Plex Sans Arabic', monospace;
-            border: 1px solid #1A5A4F;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .serial-number {
-            background: #241810;
-            border-color: #5A4A3A;
-            color: #B89A7A;
-        }
-
-        .amount-top {
-            text-align: center;
-            direction: ltr;
-            flex: 1;
-        }
-
-        .amount-value-large {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #D4B896;
-            line-height: 1.2;
-            letter-spacing: -0.2px;
-            direction: ltr;
-            display: inline-block;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .amount-value-large {
-            color: #C9A87A;
-        }
-
-        .desc-value {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #8DCBBF;
-            line-height: 1.35;
-            word-break: break-word;
-            padding: 0.2rem 0;
-            border-right: 2px solid #1A5A4F;
-            padding-right: 0.5rem;
-            text-align: center;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .desc-value {
-            color: #A8907A;
-            border-right-color: #5A4A3A;
-        }
-
-        .bottom-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            margin-top: 0.1rem;
-        }
-
-        .date-value {
-            font-family: 'IBM Plex Sans Arabic', monospace;
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: #020A0D;
-            padding: 0.15rem 0.6rem;
-            border-radius: 6px;
-            direction: ltr;
-            color: #6A9A8F;
-            display: inline-block;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .date-value {
-            background: #0F0A08;
-            color: #8A7A6A;
-        }
-        
-        /* الفئة */
-        .category-value {
-            font-family: 'IBM Plex Sans Arabic', monospace;
-            font-size: 0.8rem;
-            font-weight: 700;
-            background: rgba(2, 10, 13, 0.8);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            direction: rtl;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(43, 191, 159, 0.3);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            letter-spacing: 0.3px;
-        }
-
-        body.outgoing-mode .category-value {
-            background: rgba(26, 16, 13, 0.8);
-            border-color: rgba(168, 144, 112, 0.3);
-        }
-        
-        .category-value:hover {
-            background: rgba(43, 191, 159, 0.15);
-            border-color: #2BBF9F;
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(43, 191, 159, 0.15);
-        }
-
-        body.outgoing-mode .category-value:hover {
-            background: rgba(168, 144, 112, 0.15);
-            border-color: #A89070;
-            box-shadow: 0 4px 12px rgba(168, 144, 112, 0.15);
-        }
-        
-        .category-value:active {
-            transform: scale(0.98);
-        }
-
-        /* زر عرض الملف */
-        .file-button {
-            background: #0A1A20;
-            border: 1px solid #1A5A4F;
-            color: #8DCBBF;
-            padding: 0.5rem 0.6rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            width: 100%;
-            margin-top: 0.25rem;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            text-decoration: none;
-        }
-
-        body.outgoing-mode .file-button {
-            background: #241810;
-            border-color: #5A4A3A;
-            color: #A8907A;
-        }
-
-        .file-button:hover {
-            background: #0F2A30;
-            border-color: #2BBF9F;
-            transform: scale(0.98);
-        }
-
-        body.outgoing-mode .file-button:hover {
-            background: #2A1F18;
-            border-color: #A89070;
-            color: #C9B89A;
-        }
-
-        /* نص بديل عند عدم وجود ملف */
-        .no-file-text {
-            background: #0A0F12;
-            border: 1px solid #2A2A2A;
-            color: #5A5A5A;
-            padding: 0.5rem 0.6rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            width: 100%;
-            margin-top: 0.25rem;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            cursor: default;
-            opacity: 0.6;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .no-file-text {
-            background: #0F0A08;
-            border-color: #3A2A1A;
-            color: #5A4A3A;
-        }
-
-        .footer-company {
-            margin-top: 2rem;
-            text-align: center;
-            font-size: 0.85rem;
-            background: #061216;
-            padding: 0.8rem;
-            border-radius: 10px;
-            color: #6A9A8F;
-            border-top: 1px solid #1A4A40;
-            font-weight: 600;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .footer-company {
-            background: #1A100D;
-            color: #8A7A6A;
-            border-top-color: #5A4A3A;
-        }
-
-        /* الزر العائم */
-        .floating-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
             background: linear-gradient(135deg, #1A8A75, #0F6A5A);
-            color: white;
-            border: 2px solid #2BBF9F;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 500;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            will-change: transform, background, border-color;
+            margin-top: 0.5rem;
+            transition: all 0.2s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(43, 191, 159, 0.3);
+        }
+        .submit-btn:active { transform: translateY(0); }
+        .form-error {
+            color: #FF6B6B;
+            font-size: 0.8rem;
+            margin-top: 0.6rem;
+            text-align: center;
+            min-height: 1rem;
         }
 
-        body.outgoing-mode .floating-btn {
-            background: linear-gradient(135deg, #8A7050, #6A5A4A);
-            border-color: #A89070;
-        }
-
-        .floating-btn:hover {
-            transform: scale(1.08);
-            background: linear-gradient(135deg, #2BBF9F, #1A8A75);
-            border-color: #3FE0C0;
-        }
-
-        body.outgoing-mode .floating-btn:hover {
-            background: linear-gradient(135deg, #A89070, #8A7050);
-            border-color: #C9B89A;
-        }
-
-        .floating-btn:active {
-            transform: scale(0.92);
-        }
-
-        /* أنيميشن الدوران عند النقر */
-        .floating-btn.spinning {
-            animation: spinBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        @keyframes spinBounce {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-            30% {
-                transform: rotate(120deg) scale(1.15);
-            }
-            60% {
-                transform: rotate(240deg) scale(0.9);
-            }
-            100% {
-                transform: rotate(360deg) scale(1);
-            }
-        }
-
-        /* تأثير تموج عند النقر */
-        .floating-btn::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            border-radius: 50%;
-            background: rgba(43, 191, 159, 0.2);
+        /* توست التنبيه */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0A1A20;
+            color: #BDEADF;
+            padding: 0.7rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid #2BBF9F;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            z-index: 5000;
             opacity: 0;
             pointer-events: none;
             transition: all 0.3s ease;
+            max-width: 90%;
+            text-align: center;
         }
-
-        .floating-btn.ripple::after {
-            animation: rippleEffect 0.6s ease-out forwards;
-        }
-
-        @keyframes rippleEffect {
-            0% {
-                opacity: 0.8;
-                transform: scale(0.8);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.6);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .floating-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-                bottom: 20px;
-                left: 20px;
-            }
-        }
-
-        /* نافذة إحصائيات الأشهر */
-        .months-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(8px);
-            z-index: 1500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .months-modal-overlay.active {
-            visibility: visible;
+        .toast.show {
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
-
-        .months-modal-container {
-            background: #061216;
-            border-radius: 16px;
-            width: 92%;
-            max-width: 700px;
-            max-height: 85vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #1A5A4F;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.7);
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .months-modal-container {
-            background: #1A100D;
-            border-color: #5A4A3A;
-        }
-
-        .months-modal-header {
-            background: #0A1A20;
-            padding: 1rem 1.2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1A5A4F;
-            flex-shrink: 0;
-            transition: all 0.6s ease;
-        }
-
-        body.outgoing-mode .months-modal-header {
-            background: #241810;
-            border-bottom-color: #5A4A3A;
-        }
-
-        .months-modal-header h3 {
-            color: #C9B89A;
-            font-size: 1.2rem;
-            font-weight: 700;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .months-modal-header h3 {
-            color: #B89A7A;
-        }
-
-        .close-months-modal {
-            background: none;
-            border: none;
-            color: #8A9A92;
-            font-size: 1.8rem;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
-            line-height: 1;
-            padding: 0 0.5rem;
-        }
-
-        .close-months-modal:hover {
-            color: #FF9F7C;
-            transform: scale(1.1);
-        }
-
-        .months-modal-body {
-            padding: 1.2rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .month-stat-card {
-            background: linear-gradient(135deg, #061216, #0A1A20);
-            border-radius: 12px;
-            padding: 1rem 1.2rem;
-            margin-bottom: 0.8rem;
-            border: 1px solid #1A4A40;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-            gap: 1rem;
-        }
-
-        body.outgoing-mode .month-stat-card {
-            background: linear-gradient(135deg, #1A100D, #241810);
-            border-color: #5A4A3A;
-        }
-
-        .month-stat-card:hover {
-            border-color: #2BBF9F;
-            transform: translateX(-3px);
-            background: linear-gradient(135deg, #0A1A20, #061216);
-        }
-
-        body.outgoing-mode .month-stat-card:hover {
-            border-color: #A89070;
-            background: linear-gradient(135deg, #241810, #1A100D);
-        }
-
-        .month-name {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #D4B896;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            flex-shrink: 0;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .month-name {
-            color: #C9B89A;
-        }
-
-        .month-stats {
-            text-align: left;
-            direction: ltr;
-            flex-shrink: 0;
-        }
-
-        .month-amount {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2BBF9F;
-            display: block;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .month-amount {
-            color: #C9A87A;
-        }
-
-        .month-count {
-            font-size: 0.8rem;
-            color: #4A8A7A;
-            display: block;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .month-count {
-            color: #8A7A6A;
-        }
-
-        .no-months-data {
-            text-align: center;
-            padding: 2rem;
-            color: #6A9A8F;
-            transition: color 0.6s ease;
-        }
-
-        body.outgoing-mode .no-months-data {
-            color: #8A7A6A;
-        }
-
-        /* زر عرض الصادر */
-        .outgoing-btn-wrapper {
-            margin-top: 1.5rem;
-            text-align: center;
-        }
-
-        .outgoing-btn {
-            background: linear-gradient(135deg, #8A7050, #6A5A4A);
-            color: #E8D4B8;
-            border: 2px solid #A89070;
-            padding: 0.8rem 2rem;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .outgoing-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(168, 144, 112, 0.2);
-            background: linear-gradient(135deg, #A89070, #8A7050);
-        }
-
-        .outgoing-btn:active {
-            transform: translateY(0);
-        }
-
-        body.outgoing-mode .outgoing-btn {
-            background: linear-gradient(135deg, #1A8A75, #0F6A5A);
-            color: white;
-            border-color: #2BBF9F;
-            box-shadow: 0 4px 15px rgba(43, 191, 159, 0.15);
-        }
-
-        body.outgoing-mode .outgoing-btn:hover {
-            background: linear-gradient(135deg, #2BBF9F, #1A8A75);
-            box-shadow: 0 8px 25px rgba(43, 191, 159, 0.2);
-        }
-
-        /* تحسينات للجوال */
-        @media (max-width: 480px) {
-            body {
-                padding: 0.8rem;
-            }
-            .balance-amount {
-                font-size: 2.2rem;
-            }
-            .total-amount {
-                font-size: 1.6rem;
-            }
-            .amount-value-large {
-                font-size: 1.6rem;
-            }
-            .desc-value {
-                font-size: 1rem;
-            }
-            .serial-number {
-                font-size: 0.9rem;
-                padding: 0.2rem 0.65rem;
-            }
-            .date-value, .category-value {
-                font-size: 0.85rem;
-                padding: 0.2rem 0.7rem;
-            }
-            .file-button, .no-file-text {
-                font-size: 0.8rem;
-            }
-            .modal-header h3 {
-                font-size: 1rem;
-            }
-            .category-summary .summary-amount {
-                font-size: 1.4rem;
-            }
-            .pdf-modal-container {
-                width: 98%;
-                height: 95vh;
-            }
-            .login-container {
-                padding: 2rem 1.5rem;
-            }
-            .login-title {
-                font-size: 0.95rem;
-            }
-            .login-input {
-                font-size: 1.2rem;
-                padding: 0.8rem 1rem;
-            }
-            .login-company-title {
-                font-size: 0.9rem;
-            }
-            .login-project-title {
-                font-size: 1.1rem;
-            }
-            
-            .months-modal-container {
-                width: 95%;
-                max-height: 90vh;
-            }
-            
-            .month-stat-card {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 0.9rem 1rem;
-                gap: 0.5rem;
-            }
-            
-            .month-name {
-                font-size: 0.95rem;
-                text-align: center;
-            }
-            
-            .month-stats {
-                text-align: center;
-                direction: ltr;
-            }
-            
-            .month-amount {
-                font-size: 1rem;
-            }
-            
-            .month-count {
-                font-size: 0.75rem;
-            }
-            
-            .months-modal-header h3 {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .balance-amount {
-                font-size: 1.8rem;
-            }
-            .total-amount {
-                font-size: 1.4rem;
-            }
-            .amount-value-large {
-                font-size: 1.4rem;
-            }
-            .desc-value {
-                font-size: 0.95rem;
-            }
-            .month-stat-card {
-                padding: 0.7rem 0.8rem;
-            }
-            .month-name {
-                font-size: 0.85rem;
-            }
-            .month-amount {
-                font-size: 0.9rem;
-            }
-        }
-        
-        /* تخصيص شريط التمرير */
-        .filtered-cards-grid::-webkit-scrollbar,
-        .months-modal-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        .filtered-cards-grid::-webkit-scrollbar-track,
-        .months-modal-body::-webkit-scrollbar-track {
-            background: #020A0D;
-            border-radius: 4px;
-        }
-        .filtered-cards-grid::-webkit-scrollbar-thumb,
-        .months-modal-body::-webkit-scrollbar-thumb {
-            background: #1A5A4F;
-            border-radius: 4px;
-            transition: background 0.6s ease;
-        }
-
-        body.outgoing-mode .filtered-cards-grid::-webkit-scrollbar-thumb,
-        body.outgoing-mode .months-modal-body::-webkit-scrollbar-thumb {
-            background: #5A4A3A;
+        .toast.error {
+            border-color: #FF6B6B;
+            color: #FFB0B0;
         }
     </style>
 </head>
@@ -1546,589 +536,552 @@
     <div class="welcome-screen" id="welcomeScreen">
         <div class="welcome-text-wrapper">
             <div class="welcome-title">
-                <span class="line1">صندوق</span>
-                <span class="line2">مشاري</span>
+                <span class="line1">تطبيق</span>
+                <span class="line2">الصندوق</span>
             </div>
-        </div>
-    </div>
-
-    <!-- شاشة الدخول -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-container">
-            <div class="login-company-title">صندوق التبرعات</div>
-            <div class="login-project-title">إدارة أ. مشاري</div>
-            <div class="login-title">
-                🔐 برجاء إدخال كلمة الدخول<br>
-                للاطلاع على <span>صندوق التبرعات</span>
-            </div>
-            <input type="text" class="login-input" id="loginInput" placeholder="كلمة الدخول" autocomplete="off">
-            <button class="login-button" id="loginButton">🚪 دخول</button>
-            <div class="login-error" id="loginError">للأسف كلمة الدخول غير صحيحة، برجاء المحاولة مجددا</div>
         </div>
     </div>
 
     <!-- التطبيق الرئيسي -->
-    <div class="main-content" id="mainContent" style="display: none;">
-        <div class="app-container">
-            <div class="main-header">
-                <h1>صندوق التبرعات</h1>
-                <p id="headerSubtitle">عرض الوارد</p>
-            </div>
+    <div class="app-container" id="appContainer" style="display:none;">
 
-            <!-- كارت الإحصائيات -->
-            <div class="stats-single" id="statsSingle"></div>
+        <!-- شريط التصدير/الاستيراد -->
+        <div class="io-bar">
+            <button class="io-btn export" id="exportBtn" title="تصدير كل البيانات إلى ملف TXT">
+                📤 تصدير
+            </button>
+            <button class="io-btn import" id="importBtn" title="استيراد البيانات من ملف TXT">
+                📥 استيراد
+            </button>
+        </div>
 
-            <!-- كروت العمليات الرئيسية -->
-            <div class="cards-grid" id="transfersGrid"></div>
-            
-            <!-- زر عرض الصادر -->
-            <div class="outgoing-btn-wrapper">
-                <button class="outgoing-btn" id="outgoingBtn">📤 عرض الصادر</button>
-            </div>
-            
-            <!-- تذييل -->
-            <div class="footer-company">
-                صندوق التبرعات
+        <div class="main-header">
+            <h1>تطبيق الصندوق</h1>
+            <p>أهلا وسهلا</p>
+        </div>
+
+        <!-- كارت الرصيد -->
+        <div class="balance-card">
+            <div class="balance-label">💰 الرصيد الحالي</div>
+            <span class="balance-amount balance-positive" id="balanceAmount">0 SAR</span>
+            <span class="balance-sub" id="balanceSub">🟢 رصيد موجب</span>
+            <div class="balance-mini-row">
+                <div class="balance-mini">
+                    <span class="balance-mini-label">📥 إجمالي الوارد</span>
+                    <span class="balance-mini-amount in-color" id="totalIn">0</span>
+                </div>
+                <div class="balance-mini">
+                    <span class="balance-mini-label">📤 إجمالي الصادر</span>
+                    <span class="balance-mini-amount out-color" id="totalOut">0</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- الزر العائم للتبديل بين الوارد والصادر -->
-    <button class="floating-btn" id="floatingBtn" style="display: none;">🔄</button>
-
-    <!-- نافذة إحصائيات الأشهر -->
-    <div class="months-modal-overlay" id="monthsModal">
-        <div class="months-modal-container">
-            <div class="months-modal-header">
-                <h3 id="monthsModalTitle">📊 إحصائيات الأشهر - الوارد</h3>
-                <button class="close-months-modal" id="closeMonthsModalBtn">&times;</button>
-            </div>
-            <div class="months-modal-body" id="monthsModalBody"></div>
+        <!-- تبويبات الفلترة -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                الكل
+                <span class="count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-filter="incoming">
+                📥 الوارد
+                <span class="count" id="countIn">0</span>
+            </button>
+            <button class="filter-tab" data-filter="outgoing">
+                📤 الصادر
+                <span class="count" id="countOut">0</span>
+            </button>
         </div>
+
+        <!-- قائمة العمليات -->
+        <div class="transactions-list" id="transactionsList"></div>
     </div>
 
-    <!-- نافذة منبثقة للفئة -->
-    <div class="modal-overlay" id="categoryModal">
+    <!-- زر الإضافة العائم -->
+    <button class="add-btn" id="addBtn" style="display:none;">+</button>
+
+    <!-- نموذج إضافة عملية -->
+    <div class="modal-overlay" id="addModal">
         <div class="modal-container">
             <div class="modal-header">
-                <h3 id="modalTitle">تصفية حسب الفئة</h3>
-                <button class="close-modal" id="closeModalBtn">&times;</button>
+                <h3>➕ إضافة عملية جديدة</h3>
+                <button class="close-modal" id="closeAddModal">&times;</button>
             </div>
-            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">نوع العملية</label>
+                    <div class="type-toggle">
+                        <button type="button" class="type-btn active-in" data-type="incoming" id="typeInBtn">📥 وارد</button>
+                        <button type="button" class="type-btn" data-type="outgoing" id="typeOutBtn">📤 صادر</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-input" id="formDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الوصف</label>
+                    <input type="text" class="form-input" id="formDesc" placeholder="مثال: تبرع من أحمد" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">المبلغ (SAR)</label>
+                    <input type="number" class="form-input" id="formAmount" placeholder="0" min="0" step="any" inputmode="decimal">
+                </div>
+                <button class="submit-btn" id="submitBtn">💾 حفظ العملية</button>
+                <div class="form-error" id="formError"></div>
+            </div>
         </div>
     </div>
 
-    <!-- نافذة منبثقة لعرض PDF -->
-    <div class="pdf-modal-overlay" id="pdfModal">
-        <div class="pdf-modal-container">
-            <div class="pdf-modal-header">
-                <h3 id="pdfModalTitle">📄 عرض ملف العملية</h3>
-                <button class="close-pdf-modal" id="closePdfModalBtn">&times;</button>
-            </div>
-            <div class="pdf-iframe-container">
-                <iframe id="pdfIframe" src="" title="معاينة ملف العملية - Google Docs Viewer"></iframe>
-            </div>
-        </div>
-    </div>
+    <!-- Input مخفي للاستيراد -->
+    <input type="file" id="importFileInput" accept=".txt,text/plain" style="display:none;">
+
+    <!-- توست التنبيه -->
+    <div class="toast" id="toast"></div>
 
     <script>
-        const BASE_URL = 'https://engr-abdulrahman.github.io/Mishari_Charity/';
-        
         // =============================================
-        // بيانات التبرعات الجديدة - عامة بدون مشروع
+        // إدارة البيانات مع LocalStorage
         // =============================================
-        
-        // الوارد - تبرعات من أشخاص (أقارب وأصدقاء)
-        const incomingTransactions = [
-            { id: 1, date: "2025-01-05", amount: 500, description: "تبرع من أحمد محمد", category: "تبرعات", pdfFileName: null },
-            { id: 2, date: "2025-01-12", amount: 1000, description: "تبرع من إبراهيم علي", category: "تبرعات", pdfFileName: null },
-            { id: 3, date: "2025-01-20", amount: 250, description: "تبرع من محمد عبدالله", category: "تبرعات", pdfFileName: null },
-            { id: 4, date: "2025-01-28", amount: 750, description: "تبرع من سارة خالد", category: "تبرعات", pdfFileName: null },
-            { id: 5, date: "2025-02-03", amount: 2000, description: "تبرع من خالد العتيبي", category: "تبرعات", pdfFileName: null },
-            { id: 6, date: "2025-02-10", amount: 300, description: "تبرع من نورة سليمان", category: "تبرعات", pdfFileName: null },
-            { id: 7, date: "2025-02-18", amount: 1500, description: "تبرع من عبدالرحمن حسن", category: "تبرعات", pdfFileName: null },
-            { id: 8, date: "2025-02-25", amount: 100, description: "تبرع من فاطمة الزهراء", category: "تبرعات", pdfFileName: null },
-            { id: 9, date: "2025-03-02", amount: 800, description: "تبرع من يوسف إبراهيم", category: "تبرعات", pdfFileName: null },
-            { id: 10, date: "2025-03-09", amount: 2500, description: "تبرع من جمعية البر الخيرية", category: "تبرعات", pdfFileName: null },
-            { id: 11, date: "2025-03-16", amount: 450, description: "تبرع من مريم أحمد", category: "تبرعات", pdfFileName: null },
-            { id: 12, date: "2025-03-23", amount: 1200, description: "تبرع من سعد المهنا", category: "تبرعات", pdfFileName: null },
-            { id: 13, date: "2025-04-01", amount: 600, description: "تبرع من ليلى محمد", category: "تبرعات", pdfFileName: null },
-            { id: 14, date: "2025-04-08", amount: 350, description: "تبرع من عبدالله صالح", category: "تبرعات", pdfFileName: null },
-            { id: 15, date: "2025-04-15", amount: 5000, description: "تبرع من شركة الخير للتطوير", category: "تبرعات", pdfFileName: null },
+        const STORAGE_KEY = 'mashari_transactions_v1';
+
+        const defaultTransactions = [
+            { id: 1, type: "incoming", date: "2025-01-05", amount: 500, description: "تبرع من أحمد محمد" },
+            { id: 2, type: "incoming", date: "2025-01-12", amount: 1000, description: "تبرع من إبراهيم علي" },
+            { id: 3, type: "incoming", date: "2025-01-20", amount: 250, description: "تبرع من محمد عبدالله" },
+
+            { id: 101, type: "outgoing", date: "2025-01-15", amount: 200, description: "مساعدات لأسرة محتاجة" },
+            { id: 102, type: "outgoing", date: "2025-01-22", amount: 150, description: "دعم طالب جامعي" },
+            { id: 103, type: "outgoing", date: "2025-02-05", amount: 300, description: "مساعدات لمرضى" },
+
         ];
 
-        // الصادر - مصروفات الصندوق (مساعدات، دعم، إلخ)
-        const outgoingTransactions = [
-            { id: 101, date: "2025-01-15", amount: 200, description: "مساعدات لأسرة محتاجة", category: "مساعدات إنسانية", pdfFileName: null },
-            { id: 102, date: "2025-01-22", amount: 150, description: "دعم طالب جامعي", category: "دعم تعليمي", pdfFileName: null },
-            { id: 103, date: "2025-02-05", amount: 300, description: "مساعدات لمرضى", category: "مساعدات صحية", pdfFileName: null },
-            { id: 104, date: "2025-02-14", amount: 100, description: "دعم دار الأيتام", category: "رعاية اجتماعية", pdfFileName: null },
-            { id: 105, date: "2025-02-28", amount: 500, description: "مساعدات لأسرة مكفوفين", category: "مساعدات إنسانية", pdfFileName: null },
-            { id: 106, date: "2025-03-05", amount: 250, description: "دعم طلاب علم", category: "دعم تعليمي", pdfFileName: null },
-            { id: 107, date: "2025-03-12", amount: 400, description: "مساعدات لحالات طارئة", category: "مساعدات إنسانية", pdfFileName: null },
-            { id: 108, date: "2025-03-20", amount: 180, description: "رعاية مسنين", category: "رعاية اجتماعية", pdfFileName: null },
-            { id: 109, date: "2025-04-02", amount: 220, description: "دعم علاجي", category: "مساعدات صحية", pdfFileName: null },
-            { id: 110, date: "2025-04-10", amount: 350, description: "مساعدات لذوي الاحتياجات الخاصة", category: "رعاية اجتماعية", pdfFileName: null },
-            { id: 111, date: "2025-04-18", amount: 600, description: "دعم مشروع إفطار صائم", category: "مشاريع موسمية", pdfFileName: null },
-            { id: 112, date: "2025-04-25", amount: 280, description: "مساعدات لطلاب مدارس", category: "دعم تعليمي", pdfFileName: null },
-        ];
+        let transactions = [];
+        let currentFilter = 'all';
+        let selectedType = 'incoming';
 
-        // =============================================
-        // نهاية البيانات الجديدة
-        // =============================================
-
-        let currentMode = 'incoming';
-        let currentTransactions = incomingTransactions;
-        let isAnimating = false;
-
-        function getCategoryColor(category, mode = 'incoming') {
-            const colorMap = {
-                "تبرعات": "#D4B896",
-                "مساعدات إنسانية": "#4A8A7A",
-                "دعم تعليمي": "#6A9A8F",
-                "مساعدات صحية": "#A89070",
-                "رعاية اجتماعية": "#8A7A6A",
-                "مشاريع موسمية": "#C9A87A"
-            };
-            if (mode === 'outgoing') {
-                return colorMap[category] || "#8A7A6A";
+        function loadTransactions() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    transactions = JSON.parse(stored);
+                    if (!Array.isArray(transactions)) transactions = [...defaultTransactions];
+                } else {
+                    transactions = [...defaultTransactions];
+                    saveTransactions();
+                }
+            } catch (e) {
+                transactions = [...defaultTransactions];
             }
-            return colorMap[category] || "#2BBF9F";
         }
 
-        function formatAmountInteger(amount) {
-            let integerPart = Math.floor(amount);
-            let formatted = integerPart.toLocaleString('en');
-            return `${formatted} SAR`;
+        function saveTransactions() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+            } catch (e) {
+                console.error('فشل الحفظ في LocalStorage', e);
+            }
+        }
+
+        function generateId() {
+            if (transactions.length === 0) return 1;
+            return Math.max(...transactions.map(t => t.id || 0)) + 1;
+        }
+
+        function formatAmount(amount) {
+            return Math.floor(amount).toLocaleString('en') + ' SAR';
         }
 
         function formatDate(dateString) {
-            if (!dateString) return "—";
+            if (!dateString) return '—';
             return dateString;
         }
 
-        function calculateStats(transactions) {
-            const totalAmount = transactions.reduce((sum, t) => sum + t.amount, 0);
-            const integerTotal = Math.floor(totalAmount);
-            const count = transactions.length;
-            return { total: integerTotal, count: count };
+        function calculateStats() {
+            const totalIn = transactions
+                .filter(t => t.type === 'incoming')
+                .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+            const totalOut = transactions
+                .filter(t => t.type === 'outgoing')
+                .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+            const balance = totalIn - totalOut;
+            const countAll = transactions.length;
+            const countIn = transactions.filter(t => t.type === 'incoming').length;
+            const countOut = transactions.filter(t => t.type === 'outgoing').length;
+            return { totalIn, totalOut, balance, countAll, countIn, countOut };
         }
 
-        function calculateBalance() {
-            const totalIncoming = incomingTransactions.reduce((sum, t) => sum + t.amount, 0);
-            const totalOutgoing = outgoingTransactions.reduce((sum, t) => sum + t.amount, 0);
-            const balance = totalIncoming - totalOutgoing;
-            return { totalIncoming, totalOutgoing, balance };
+        function renderBalance() {
+            const { totalIn, totalOut, balance } = calculateStats();
+            const balEl = document.getElementById('balanceAmount');
+            const subEl = document.getElementById('balanceSub');
+
+            balEl.textContent = Math.floor(balance).toLocaleString('en') + ' SAR';
+            balEl.className = 'balance-amount ' + (balance >= 0 ? 'balance-positive' : 'balance-negative');
+            subEl.textContent = balance >= 0 ? '🟢 رصيد موجب' : '🔴 رصيد سالب';
+
+            document.getElementById('totalIn').textContent = Math.floor(totalIn).toLocaleString('en') + ' SAR';
+            document.getElementById('totalOut').textContent = Math.floor(totalOut).toLocaleString('en') + ' SAR';
         }
 
-        function renderStats(transactions, mode = 'incoming') {
-            const statsContainer = document.getElementById('statsSingle');
-            if (!statsContainer) return;
-            const { total, count } = calculateStats(transactions);
-            const formattedTotal = total.toLocaleString('en');
-            const { balance } = calculateBalance();
-            
-            const balanceClass = balance >= 0 ? 'balance-positive' : 'balance-negative';
-            const balanceFormatted = Math.floor(balance).toLocaleString('en');
-            
-            let totalLabel = mode === 'incoming' ? '💰 إجمالي التبرعات الواردة' : '💳 إجمالي المصروفات الصادرة';
-            
-            statsContainer.innerHTML = `
-                <div class="stat-card-single">
-                    <div class="balance-section">
-                        <span class="balance-label">📊 رصيد الصندوق الحالي</span>
-                        <span class="balance-amount ${balanceClass}">${balanceFormatted} SAR</span>
-                        <span class="balance-sub">${balance >= 0 ? '🟢 رصيد موجب' : '🔴 رصيد سالب'}</span>
-                    </div>
-                    
-                    <div class="total-section">
-                        <span class="total-label">${totalLabel}</span>
-                        <span class="total-amount">${formattedTotal} SAR</span>
-                        <span class="total-count">${count} عملية</span>
-                    </div>
-                </div>
-            `;
+        function renderCounts() {
+            const { countAll, countIn, countOut } = calculateStats();
+            document.getElementById('countAll').textContent = countAll + ' عملية';
+            document.getElementById('countIn').textContent = countIn + ' عملية';
+            document.getElementById('countOut').textContent = countOut + ' عملية';
         }
 
-        function getCategoryTotal(category, transactions) {
-            const filtered = transactions.filter(t => t.category === category);
-            const total = filtered.reduce((sum, t) => sum + t.amount, 0);
-            return Math.floor(total);
-        }
+        function renderTransactions() {
+            const container = document.getElementById('transactionsList');
+            container.innerHTML = '';
 
-        function showFilteredByCategory(category, transactions, mode = 'incoming') {
-            const modal = document.getElementById('categoryModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            
-            const filteredTransfers = transactions.filter(t => t.category === category);
-            const categoryTotal = getCategoryTotal(category, transactions);
-            const formattedTotal = categoryTotal.toLocaleString('en');
-            const categoryColor = getCategoryColor(category, mode);
-            
-            const modeLabel = mode === 'incoming' ? 'الوارد' : 'الصادر';
-            modalTitle.innerHTML = `🏷️ فئة: ${category} (${modeLabel})`;
-            
-            if (filteredTransfers.length === 0) {
-                modalBody.innerHTML = '<div class="no-results">لا توجد عمليات في هذه الفئة</div>';
-            } else {
-                const cardsHtml = filteredTransfers.map((transfer) => {
-                    const formattedAmount = formatAmountInteger(transfer.amount);
-                    const formattedDate = formatDate(transfer.date);
-                    const catColor = getCategoryColor(transfer.category, mode);
-                    return `
-                        <div class="filtered-card">
-                            <div class="row">
-                                <span class="filtered-amount">${formattedAmount}</span>
-                                <span class="filtered-date">${formattedDate}</span>
-                            </div>
-                            <div class="filtered-desc">${transfer.description}</div>
-                            <div class="row">
-                                <span style="background:#020A0D; padding:0.1rem 0.5rem; border-radius:12px; color:${catColor}; font-size:0.7rem; font-weight:600;">🏷️ ${transfer.category}</span>
-                                <span style="font-size:0.65rem; color:#4A8A7A;">#${transfer.id}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                modalBody.innerHTML = `
-                    <div class="category-summary" style="border-color: ${categoryColor};">
-                        <div class="summary-label">📊 إجمالي مبالغ فئة ${category} (${modeLabel})</div>
-                        <div class="summary-amount">${formattedTotal} SAR</div>
-                        <div class="summary-count">${filteredTransfers.length} عملية</div>
-                    </div>
-                    <div class="filtered-cards-grid">${cardsHtml}</div>
-                `;
+            let filtered = [...transactions];
+            if (currentFilter === 'incoming') {
+                filtered = filtered.filter(t => t.type === 'incoming');
+            } else if (currentFilter === 'outgoing') {
+                filtered = filtered.filter(t => t.type === 'outgoing');
             }
-            
-            modal.classList.add('active');
-        }
-        
-        function closeModal() {
-            const modal = document.getElementById('categoryModal');
-            modal.classList.remove('active');
-        }
 
-        function showPdfModal(pdfFileName, transferId, transferDate, transferAmount) {
-            const pdfModal = document.getElementById('pdfModal');
-            const pdfIframe = document.getElementById('pdfIframe');
-            const pdfModalTitle = document.getElementById('pdfModalTitle');
-            
-            const pdfUrl = BASE_URL + pdfFileName;
-            const encodedPdfUrl = encodeURIComponent(pdfUrl);
-            const googleViewerUrl = `https://docs.google.com/gview?embedded=true&url=${encodedPdfUrl}`;
-            
-            pdfModalTitle.innerHTML = `📄 ملف العملية #${transferId} | ${formatDate(transferDate)} | ${formatAmountInteger(transferAmount)}`;
-            pdfIframe.src = googleViewerUrl;
-            pdfModal.classList.add('active');
-        }
-        
-        function closePdfModal() {
-            const pdfModal = document.getElementById('pdfModal');
-            const pdfIframe = document.getElementById('pdfIframe');
-            pdfModal.classList.remove('active');
-            setTimeout(() => {
-                if (!pdfModal.classList.contains('active')) {
-                    pdfIframe.src = '';
-                }
-            }, 300);
-        }
+            filtered.sort((a, b) => {
+                const dateA = a.date || '';
+                const dateB = b.date || '';
+                if (dateA !== dateB) return dateB.localeCompare(dateA);
+                return (b.id || 0) - (a.id || 0);
+            });
 
-        function showMonthsStats(transactions, mode = 'incoming') {
-            const modal = document.getElementById('monthsModal');
-            const modalBody = document.getElementById('monthsModalBody');
-            const modalTitle = document.getElementById('monthsModalTitle');
-            
-            const modeLabel = mode === 'incoming' ? 'الوارد' : 'الصادر';
-            modalTitle.innerHTML = `📊 إحصائيات الأشهر - ${modeLabel}`;
-            
-            const monthsData = {};
-            
-            transactions.forEach(transfer => {
-                if (!transfer.date) return;
-                const dateParts = transfer.date.split('-');
-                if (dateParts.length !== 3) return;
-                const year = dateParts[0];
-                const month = dateParts[1];
-                const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
-                                   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-                const monthName = monthNames[parseInt(month) - 1];
-                const key = `${year}-${month}`;
-                
-                if (!monthsData[key]) {
-                    monthsData[key] = {
-                        year: year,
-                        month: month,
-                        monthName: monthName,
-                        total: 0,
-                        count: 0
-                    };
-                }
-                monthsData[key].total += transfer.amount;
-                monthsData[key].count += 1;
-            });
-            
-            const sortedMonths = Object.values(monthsData).sort((a, b) => {
-                if (a.year !== b.year) return b.year - a.year;
-                return b.month - a.month;
-            });
-            
-            if (sortedMonths.length === 0) {
-                modalBody.innerHTML = '<div class="no-months-data">لا توجد بيانات شهرية متاحة</div>';
-            } else {
-                let html = '';
-                sortedMonths.forEach(monthData => {
-                    const formattedTotal = Math.floor(monthData.total).toLocaleString('en');
-                    html += `
-                        <div class="month-stat-card">
-                            <span class="month-name">📅 ${monthData.monthName} ${monthData.year}</span>
-                            <div class="month-stats">
-                                <span class="month-amount">${formattedTotal} SAR</span>
-                                <span class="month-count">${monthData.count} عملية</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                modalBody.innerHTML = html;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-tx">لا توجد عمليات مطابقة للفلتر الحالي</div>';
+                return;
             }
-            
-            modal.classList.add('active');
-        }
 
-        function closeMonthsModal() {
-            const modal = document.getElementById('monthsModal');
-            modal.classList.remove('active');
-        }
-
-        function renderTransferCards(transactions, mode = 'incoming') {
-            const gridContainer = document.getElementById('transfersGrid');
-            if (!gridContainer) return;
-            gridContainer.innerHTML = '';
-
-            const sortedTransfers = [...transactions].sort((a, b) => b.id - a.id);
-
-            sortedTransfers.forEach((transfer) => {
+            filtered.forEach(tx => {
+                const isOut = tx.type === 'outgoing';
                 const card = document.createElement('div');
-                card.className = 'transfer-card';
-                
-                const { date, amount, description, category, id, pdfFileName } = transfer;
-                const formattedDate = formatDate(date);
-                const formattedAmount = formatAmountInteger(amount);
-                const serial = id;
-                const categoryColor = getCategoryColor(category, mode);
-                
-                const cardHeader = document.createElement('div');
-                cardHeader.className = 'card-header';
-                
-                const amountDiv = document.createElement('div');
-                amountDiv.className = 'amount-top';
-                const amountSpan = document.createElement('span');
-                amountSpan.className = 'amount-value-large';
-                amountSpan.textContent = formattedAmount;
-                amountDiv.appendChild(amountSpan);
-                
-                const serialSpan = document.createElement('div');
-                serialSpan.className = 'serial-number';
-                serialSpan.textContent = `${serial}`;
-                
-                cardHeader.appendChild(amountDiv);
-                cardHeader.appendChild(serialSpan);
-                
-                const descDiv = document.createElement('div');
-                descDiv.className = 'desc-value';
-                descDiv.textContent = description;
-                
-                const bottomRow = document.createElement('div');
-                bottomRow.className = 'bottom-row';
-                
-                const dateSpan = document.createElement('span');
-                dateSpan.className = 'date-value';
-                dateSpan.textContent = formattedDate;
-                
-                const categorySpan = document.createElement('span');
-                categorySpan.className = 'category-value';
-                categorySpan.innerHTML = `🏷️ ${category}`;
-                categorySpan.style.color = categoryColor;
-                categorySpan.style.fontWeight = '700';
-                categorySpan.style.cursor = 'pointer';
-                categorySpan.addEventListener('click', (e) => {
+                card.className = 'tx-card' + (isOut ? ' outgoing' : '');
+
+                card.innerHTML = `
+                    <div class="tx-icon">${isOut ? '📤' : '📥'}</div>
+                    <div class="tx-body">
+                        <div class="tx-desc">${escapeHtml(tx.description || 'بدون وصف')}</div>
+                        <div class="tx-date">${formatDate(tx.date)}</div>
+                    </div>
+                    <div class="tx-right">
+                        <div class="tx-amount">${formatAmount(tx.amount)}</div>
+                        <span class="tx-badge">${isOut ? 'صادر' : 'وارد'}</span>
+                    </div>
+                    <button class="tx-delete" title="حذف" data-id="${tx.id}">🗑</button>
+                `;
+                container.appendChild(card);
+            });
+
+            container.querySelectorAll('.tx-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    showFilteredByCategory(category, transactions, mode);
+                    const id = Number(btn.getAttribute('data-id'));
+                    deleteTransaction(id);
                 });
-                
-                bottomRow.appendChild(dateSpan);
-                bottomRow.appendChild(categorySpan);
-                
-                card.appendChild(cardHeader);
-                card.appendChild(descDiv);
-                card.appendChild(bottomRow);
-                
-                if (pdfFileName && pdfFileName !== null) {
-                    const fileBtn = document.createElement('button');
-                    fileBtn.className = 'file-button';
-                    fileBtn.innerHTML = `📄 عرض ملف العملية`;
-                    fileBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showPdfModal(pdfFileName, id, date, amount);
-                    });
-                    card.appendChild(fileBtn);
-                } else {
-                    const noFileDiv = document.createElement('div');
-                    noFileDiv.className = 'no-file-text';
-                    noFileDiv.innerHTML = `📄 لا يوجد ملف مرفق`;
-                    card.appendChild(noFileDiv);
-                }
-                
-                gridContainer.appendChild(card);
             });
-            
-            if (transactions.length === 0) {
-                gridContainer.innerHTML = '<div style="background:#061216; padding:1.5rem; border-radius:8px; text-align:center; color:#6A9A8F;">لا توجد عمليات حالياً</div>';
-            }
         }
 
-        function toggleMode() {
-            if (isAnimating) return;
-            
-            const btn = document.getElementById('floatingBtn');
-            
-            btn.classList.remove('spinning', 'ripple');
-            void btn.offsetWidth;
-            btn.classList.add('spinning');
-            btn.classList.add('ripple');
-            
-            isAnimating = true;
-            
-            setTimeout(() => {
-                if (currentMode === 'incoming') {
-                    currentMode = 'outgoing';
-                    currentTransactions = outgoingTransactions;
-                    document.body.classList.add('outgoing-mode');
-                    document.getElementById('headerSubtitle').textContent = 'عرض عمليات الصادر';
-                    document.getElementById('outgoingBtn').textContent = '📥 عرض الوارد';
-                    document.getElementById('monthsModalTitle').innerHTML = '📊 إحصائيات الأشهر - الصادر';
-                } else {
-                    currentMode = 'incoming';
-                    currentTransactions = incomingTransactions;
-                    document.body.classList.remove('outgoing-mode');
-                    document.getElementById('headerSubtitle').textContent = 'عرض عمليات الوارد';
-                    document.getElementById('outgoingBtn').textContent = '📤 عرض الصادر';
-                    document.getElementById('monthsModalTitle').innerHTML = '📊 إحصائيات الأشهر - الوارد';
-                }
-                
-                renderStats(currentTransactions, currentMode);
-                renderTransferCards(currentTransactions, currentMode);
-                
-                btn.classList.remove('spinning');
-                isAnimating = false;
-            }, 800);
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
-        function showOutgoingTransactions() {
-            if (currentMode === 'incoming') {
-                toggleMode();
+        function deleteTransaction(id) {
+            if (!confirm('هل تريد حذف هذه العملية؟')) return;
+            transactions = transactions.filter(t => t.id !== id);
+            saveTransactions();
+            renderAll();
+        }
+
+        function renderAll() {
+            renderBalance();
+            renderCounts();
+            renderTransactions();
+        }
+
+        // =============================================
+        // الفلترة
+        // =============================================
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.getAttribute('data-filter');
+                renderTransactions();
+            });
+        });
+
+        // =============================================
+        // نموذج الإضافة
+        // =============================================
+        const addModal = document.getElementById('addModal');
+        const addBtn = document.getElementById('addBtn');
+        const closeAddBtn = document.getElementById('closeAddModal');
+        const submitBtn = document.getElementById('submitBtn');
+        const formError = document.getElementById('formError');
+
+        function openAddModal() {
+            selectedType = 'incoming';
+            updateTypeButtons();
+            document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('formDesc').value = '';
+            document.getElementById('formAmount').value = '';
+            formError.textContent = '';
+            addModal.classList.add('active');
+            setTimeout(() => document.getElementById('formDesc').focus(), 200);
+        }
+
+        function closeAddModal() {
+            addModal.classList.remove('active');
+        }
+
+        function updateTypeButtons() {
+            const inBtn = document.getElementById('typeInBtn');
+            const outBtn = document.getElementById('typeOutBtn');
+            inBtn.classList.remove('active-in', 'active-out');
+            outBtn.classList.remove('active-in', 'active-out');
+            if (selectedType === 'incoming') {
+                inBtn.classList.add('active-in');
             } else {
-                showMonthsStats(outgoingTransactions, 'outgoing');
+                outBtn.classList.add('active-out');
             }
         }
 
-        function setupModalEvents() {
-            const modal = document.getElementById('categoryModal');
-            const closeBtn = document.getElementById('closeModalBtn');
-            
-            closeBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-            
-            const pdfModal = document.getElementById('pdfModal');
-            const closePdfBtn = document.getElementById('closePdfModalBtn');
-            
-            closePdfBtn.addEventListener('click', closePdfModal);
-            pdfModal.addEventListener('click', (e) => {
-                if (e.target === pdfModal) {
-                    closePdfModal();
-                }
-            });
-            
-            const monthsModal = document.getElementById('monthsModal');
-            const closeMonthsBtn = document.getElementById('closeMonthsModalBtn');
-            
-            closeMonthsBtn.addEventListener('click', closeMonthsModal);
-            monthsModal.addEventListener('click', (e) => {
-                if (e.target === monthsModal) {
-                    closeMonthsModal();
-                }
-            });
-            
-            const floatingBtn = document.getElementById('floatingBtn');
-            floatingBtn.addEventListener('click', toggleMode);
-            
-            const outgoingBtn = document.getElementById('outgoingBtn');
-            outgoingBtn.addEventListener('click', showOutgoingTransactions);
-            
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    if (modal.classList.contains('active')) closeModal();
-                    if (pdfModal.classList.contains('active')) closePdfModal();
-                    if (monthsModal.classList.contains('active')) closeMonthsModal();
-                }
-            });
-        }
+        document.getElementById('typeInBtn').addEventListener('click', () => {
+            selectedType = 'incoming';
+            updateTypeButtons();
+        });
+        document.getElementById('typeOutBtn').addEventListener('click', () => {
+            selectedType = 'outgoing';
+            updateTypeButtons();
+        });
 
-        function init() {
-            renderStats(currentTransactions, currentMode);
-            renderTransferCards(currentTransactions, currentMode);
-            setupModalEvents();
-        }
+        addBtn.addEventListener('click', openAddModal);
+        closeAddBtn.addEventListener('click', closeAddModal);
+        addModal.addEventListener('click', (e) => {
+            if (e.target === addModal) closeAddModal();
+        });
 
-        // إدارة شاشة البدء
-        setTimeout(() => {
-            const welcomeScreen = document.getElementById('welcomeScreen');
-            if (welcomeScreen && welcomeScreen.parentNode) {
-                welcomeScreen.remove();
+        submitBtn.addEventListener('click', () => {
+            const date = document.getElementById('formDate').value.trim();
+            const desc = document.getElementById('formDesc').value.trim();
+            const amountRaw = document.getElementById('formAmount').value.trim();
+
+            if (!date) { formError.textContent = '⚠️ برجاء إدخال التاريخ'; return; }
+            if (!desc) { formError.textContent = '⚠️ برجاء إدخال الوصف'; return; }
+            const amount = Number(amountRaw);
+            if (!amountRaw || isNaN(amount) || amount <= 0) {
+                formError.textContent = '⚠️ برجاء إدخال مبلغ صحيح أكبر من صفر';
+                return;
             }
-            document.getElementById('loginScreen').classList.add('active');
-        }, 2800);
 
-        // إدارة الدخول
-        const loginInput = document.getElementById('loginInput');
-        const loginButton = document.getElementById('loginButton');
-        const loginError = document.getElementById('loginError');
-        const mainContent = document.getElementById('mainContent');
-        const loginScreen = document.getElementById('loginScreen');
-        const floatingBtn = document.getElementById('floatingBtn');
+            const newTx = {
+                id: generateId(),
+                type: selectedType,
+                date: date,
+                amount: amount,
+                description: desc
+            };
+            transactions.push(newTx);
+            saveTransactions();
+            renderAll();
+            closeAddModal();
+            showToast('✅ تم حفظ العملية بنجاح');
+        });
 
-        function handleLogin() {
-            const password = loginInput.value.trim();
-            if (password === 'مشاري') {
-                loginError.classList.remove('show');
-                loginScreen.classList.remove('active');
-                mainContent.style.display = 'block';
-                floatingBtn.style.display = 'flex';
-                init();
-            } else {
-                loginError.classList.add('show');
-                loginInput.value = '';
-                loginInput.focus();
-                setTimeout(() => {
-                    loginError.classList.remove('show');
-                }, 3000);
-            }
-        }
-
-        loginButton.addEventListener('click', handleLogin);
-        loginInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleLogin();
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && addModal.classList.contains('active')) {
+                closeAddModal();
             }
         });
 
+        // =============================================
+        // توست التنبيه
+        // =============================================
+        let toastTimer = null;
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.toggle('error', isError);
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2600);
+        }
+
+        // =============================================
+        // التصدير
+        // =============================================
+        function pad2(n) { return String(n).padStart(2, '0'); }
+
+        function buildFileName() {
+            const d = new Date();
+            const dateStr = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+            return `${dateStr} _ Box App Data.txt`;
+        }
+
+        function buildExportContent() {
+            const payload = {
+                app: "Box App",
+                appAr: "تطبيق الصندوق",
+                version: 1,
+                exportedAt: new Date().toISOString(),
+                storageKey: STORAGE_KEY,
+                transactionsCount: transactions.length,
+                transactions: transactions
+            };
+            return JSON.stringify(payload, null, 2);
+        }
+
+        function exportData() {
+            try {
+                const content = buildExportContent();
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const fileName = buildFileName();
+
+                const file = new File([blob], fileName, { type: 'text/plain' });
+                const canShareFiles = navigator.canShare && navigator.canShare({ files: [file] });
+
+                if (canShareFiles && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Box App Data',
+                        text: 'ملف بيانات تطبيق الصندوق'
+                    }).then(() => {
+                        showToast('✅ تم تجهيز الملف للمشاركة/الحفظ');
+                    }).catch(() => {
+                        downloadBlob(blob, fileName);
+                    });
+                } else {
+                    downloadBlob(blob, fileName);
+                }
+
+                showToast(`📤 تم تصدير ${transactions.length} عملية`);
+            } catch (e) {
+                console.error(e);
+                showToast('❌ فشل التصدير', true);
+            }
+        }
+
+        function downloadBlob(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        // =============================================
+        // الاستيراد
+        // =============================================
+        function parseImportContent(text) {
+            try {
+                const data = JSON.parse(text);
+                if (data && Array.isArray(data.transactions)) {
+                    return data.transactions;
+                }
+                if (Array.isArray(data)) {
+                    return data;
+                }
+            } catch (e) { /* تجاهل */ }
+            throw new Error('صيغة الملف غير مدعومة');
+        }
+
+        function normalizeTransaction(t) {
+            const type = (t.type === 'outgoing' || t.type === 'صادر' || t.type === 'out') ? 'outgoing' : 'incoming';
+            const amount = Number(t.amount);
+            return {
+                id: Number(t.id) || 0,
+                type: type,
+                date: String(t.date || '').trim(),
+                amount: isNaN(amount) ? 0 : amount,
+                description: String(t.description || '').trim()
+            };
+        }
+
+        function handleImportFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const raw = parseImportContent(text);
+
+                    if (!raw || raw.length === 0) {
+                        showToast('⚠️ الملف لا يحتوي على بيانات', true);
+                        return;
+                    }
+
+                    const count = raw.length;
+                    const ok = confirm(
+                        `📥 سيتم استيراد ${count} عملية.\n\n` +
+                        `⚠️ سيتم استبدال جميع البيانات الحالية.\n\n` +
+                        `هل تريد المتابعة؟`
+                    );
+                    if (!ok) {
+                        showToast('تم إلغاء الاستيراد');
+                        return;
+                    }
+
+                    const imported = raw.map(normalizeTransaction).filter(t => t.description || t.amount);
+
+                    let maxId = 0;
+                    imported.forEach(t => { if (t.id > maxId) maxId = t.id; });
+                    imported.forEach(t => {
+                        if (!t.id || t.id === 0) t.id = ++maxId;
+                    });
+
+                    transactions = imported;
+                    saveTransactions();
+                    renderAll();
+                    showToast(`✅ تم استيراد ${imported.length} عملية بنجاح`);
+                } catch (err) {
+                    console.error(err);
+                    showToast('❌ فشل قراءة الملف - تأكد أنه ملف صادر من البرنامج', true);
+                }
+            };
+            reader.onerror = () => showToast('❌ فشل قراءة الملف', true);
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // =============================================
+        // ربط أزرار التصدير/الاستيراد
+        // =============================================
+        document.getElementById('exportBtn').addEventListener('click', exportData);
+
+        const importFileInput = document.getElementById('importFileInput');
+        document.getElementById('importBtn').addEventListener('click', () => {
+            importFileInput.value = '';
+            importFileInput.click();
+        });
+        importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (file) handleImportFile(file);
+        });
+
+        // =============================================
+        // الإقلاع
+        // =============================================
+        loadTransactions();
+
         setTimeout(() => {
-            loginInput.focus();
-        }, 3000);
+            const welcome = document.getElementById('welcomeScreen');
+            if (welcome && welcome.parentNode) welcome.remove();
+
+            document.getElementById('appContainer').style.display = 'block';
+            document.getElementById('addBtn').style.display = 'flex';
+
+            renderAll();
+        }, 2800);
     </script>
 
 </body>
